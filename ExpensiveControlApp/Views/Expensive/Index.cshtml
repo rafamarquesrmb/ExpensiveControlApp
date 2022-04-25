@@ -41,3 +41,38 @@
     </div>
 </form>
 
+
+<div class="row">
+    <div class="col-md">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Items.Count > 0)
+                {
+                    foreach(var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Description</td>
+                            <td>@item.Date</td>
+                            <td>@item.Value</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">Nenhum registro encontrado.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
