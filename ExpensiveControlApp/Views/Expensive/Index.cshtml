@@ -1,24 +1,23 @@
 ﻿@model ExpensiveControlApp.DTOs.ListExpensiveDTO
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página Inicial";
 }
 
 <div class="row">
-    <div class="col-sm">
+    <div class="d-flex justify-content-between mb-5">
+
         <h1>Despesas</h1>
+
+
+
+        <a asp-action="Create" asp-controller="Expensive" class="btn btn-primary btn-lg btn-block">+ Nova despesa</a>
     </div>
+
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <a asp-action="Create" asp-controller="Expensive" class="btn btn-primary btn-lg btn-block">
-            Nova despesa
-        </a>
-    </div>
-</div>
 
-<form method="post">
+<form class="mb-3" method="post">
     <div asp-validation-summary="All" class="text-danger">
     </div>
     <div class="row">
@@ -41,7 +40,27 @@
     </div>
 </form>
 
-
+@if (Model.Items.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table mb-5">
+                <thead>
+                    <tr>
+                        <th>Número de Registros</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@Model.Count</td>
+                        <td>R$ @Model.Total.ToString("00.00")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
 <div class="row">
     <div class="col-md">
         <table class="table">
@@ -54,15 +73,15 @@
                 </tr>
             </thead>
             <tbody>
-                @if(Model.Items.Count > 0)
+                @if (Model.Items.Count > 0)
                 {
-                    foreach(var item in Model.Items)
+                    foreach (var item in Model.Items)
                     {
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.Description</td>
-                            <td>@item.Date</td>
-                            <td>@item.Value</td>
+                            <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                            <td>R$ @item.Value.ToString("00.00")</td>
                         </tr>
                     }
                 }

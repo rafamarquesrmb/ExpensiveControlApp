@@ -23,6 +23,8 @@ namespace ExpensiveControlApp.Controllers
             try
             {
                 listExpensiveDto.Items = await _expensiveService.FindBy(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
+                listExpensiveDto.Count = listExpensiveDto.Items.Count;
+                listExpensiveDto.Total = listExpensiveDto.VerifyTotal();
                 return View(listExpensiveDto);
             }
             catch (Exception ex)
@@ -33,11 +35,14 @@ namespace ExpensiveControlApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ListExpensiveDTO listExpensiveDto)
         {
             try
             {
                 listExpensiveDto.Items = await _expensiveService.FindBy(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
+                listExpensiveDto.Count = listExpensiveDto.Items.Count;
+                listExpensiveDto.Total = listExpensiveDto.VerifyTotal();
                 return View(listExpensiveDto);
             }
             catch (Exception ex)
@@ -47,6 +52,36 @@ namespace ExpensiveControlApp.Controllers
             }
         }
 
+
+        public async Task<IActionResult> Create()
+        {
+            var createExpensiveDto = new CreateExpensiveDTO();
+            try
+            {
+                return View(createExpensiveDto);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return View(createExpensiveDto);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateExpensiveDTO createExpensiveDto)
+        {
+            try
+            {
+                await _expensiveService.Create(createExpensiveDto);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return View(createExpensiveDto);
+            }
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

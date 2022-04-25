@@ -1,0 +1,43 @@
+﻿@model ExpensiveControlApp.DTOs.CreateExpensiveDTO
+
+@{
+    ViewData["Title"] = "Nova Despesa";
+}
+
+<form method="post">
+    <h1>Acrescentar nova Despesa</h1>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input asp-for="Description" placeholder="Digite a descrição" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="date" asp-for="Date" placeholder="Digite a data" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="number" asp-for="Value" placeholder="Digite o Valor" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-row-reverse">
+        <div class="d-inline p-2">
+            <button type="submit" class="btn btn-primary btn-login text-uppercase fw-bold">Criar</button>
+        </div>
+        <div class="d-inline p-2">
+            <a asp-action="Index" class="btn btn-secondary btn-login text-uppercase fw-bold">Voltar</a>
+        </div>
+        
+    </div>
+</form>
