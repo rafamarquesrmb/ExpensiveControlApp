@@ -70,6 +70,7 @@
                     <th>Descrição</th>
                     <th>Data</th>
                     <th>Valor</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +83,7 @@
                             <td>@item.Description</td>
                             <td>@item.Date.ToString("dd/MM/yyyy")</td>
                             <td>R$ @item.Value.ToString("00.00")</td>
+                            <td><a asp-action="Edit" asp-route-id="@item.Id">Editar</a> | <a asp-action="Delete" asp-route-id="@item.Id">Deletar</a></td>
                         </tr>
                     }
                 }

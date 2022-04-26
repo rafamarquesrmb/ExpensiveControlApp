@@ -1,5 +1,6 @@
 ﻿using ExpensiveControlApp.DTOs;
 using ExpensiveControlApp.Models;
+using ExpensiveControlApp.Models.Expensives;
 using ExpensiveControlApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -22,7 +23,7 @@ namespace ExpensiveControlApp.Controllers
             var listExpensiveDto = new ListExpensiveDTO();
             try
             {
-                listExpensiveDto.Items = await _expensiveService.FindBy(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
+                listExpensiveDto.Items = await _expensiveService.FindByDate(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
                 listExpensiveDto.Count = listExpensiveDto.Items.Count;
                 listExpensiveDto.Total = listExpensiveDto.VerifyTotal();
                 return View(listExpensiveDto);
@@ -40,7 +41,7 @@ namespace ExpensiveControlApp.Controllers
         {
             try
             {
-                listExpensiveDto.Items = await _expensiveService.FindBy(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
+                listExpensiveDto.Items = await _expensiveService.FindByDate(listExpensiveDto.StartDate, listExpensiveDto.EndDate);
                 listExpensiveDto.Count = listExpensiveDto.Items.Count;
                 listExpensiveDto.Total = listExpensiveDto.VerifyTotal();
                 return View(listExpensiveDto);
@@ -80,6 +81,88 @@ namespace ExpensiveControlApp.Controllers
             {
                 ModelState.AddModelError("CustomError", ex.Message);
                 return View(createExpensiveDto);
+            }
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+
+            if (id == null)
+                return NotFound();            
+            try
+            {
+                var item = await _expensiveService.FindById(id);
+                if (item == null)
+                    return NotFound();
+                return View(new UpdateExpensiveDTO
+                {
+                    Id = item.Id,
+                    Description = item.Description,
+                    Date = item.Date,
+                    Value = item.Value
+                });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UpdateExpensiveDTO updateExpensiveDTO)
+        {
+            if(updateExpensiveDTO.Id == null || updateExpensiveDTO == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                await _expensiveService.Update(updateExpensiveDTO);
+                var item = await _expensiveService.FindById(updateExpensiveDTO.Id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return View(updateExpensiveDTO);
+            }
+        }
+
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return BadRequest();
+            try
+            {
+                var item = await _expensiveService.FindById(id);
+                if (item == null)
+                    return NotFound();
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            
+            try
+            {
+                await _expensiveService.Delete(id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("CustomError", ex.Message);
+                return RedirectToAction("Index");
             }
         }
 

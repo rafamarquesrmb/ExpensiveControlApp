@@ -14,7 +14,8 @@ namespace ExpensiveControlApp.Services
 
         public async Task Create(DTOs.CreateExpensiveDTO createExpensiveDTO)
         {
-            await _dbContext.Expensives.AddAsync(new Expensive{
+            await _dbContext.Expensives.AddAsync(new Expensive
+            {
                 Description = createExpensiveDTO.Description,
                 Value = createExpensiveDTO.Value,
                 Date = createExpensiveDTO.Date
@@ -23,7 +24,7 @@ namespace ExpensiveControlApp.Services
 
         }
 
-        public async Task<List<Expensive>> FindBy(DateTime startDate, DateTime endDate)
+        public async Task<List<Expensive>> FindByDate(DateTime startDate, DateTime endDate)
         {
             if (startDate > endDate)
             {
@@ -32,6 +33,72 @@ namespace ExpensiveControlApp.Services
             var items = await _dbContext.Expensives.Where(e => e.Date >= startDate && e.Date <= endDate).AsNoTracking().ToListAsync();
             return items;
         }
+
+        public async Task<Expensive> FindById(int? id)
+        {
+            if (!id.HasValue)
+                throw new Exception("É necessário um ID");
+            var item = await _dbContext.Expensives.Where(e => e.Id == id).AsNoTracking().FirstOrDefaultAsync();
+            if (item == null)
+                throw new Exception("Não encontrado");
+            return item;
+        }
+
+        public async Task Update(DTOs.UpdateExpensiveDTO updateExpensiveDTO)
+        {
+            if (updateExpensiveDTO == null)
+                throw new Exception("Parametros necessários");
+            Expensive expensiveToUpdate = await FindById(updateExpensiveDTO.Id);
+            if (expensiveToUpdate == null)
+            {
+                throw new Exception("Inexistente");
+            }
+            if (updateExpensiveDTO.Date != null && updateExpensiveDTO.Date != expensiveToUpdate.Date)
+                expensiveToUpdate.Date = updateExpensiveDTO.Date;
+            if (updateExpensiveDTO.Value != null && updateExpensiveDTO.Value != expensiveToUpdate.Value)
+                expensiveToUpdate.Value = updateExpensiveDTO.Value;
+            if (updateExpensiveDTO.Description != null && updateExpensiveDTO.Description != expensiveToUpdate.Description)
+                expensiveToUpdate.Description = updateExpensiveDTO.Description;
+
+            try
+            {
+                _dbContext.Expensives.Update(expensiveToUpdate);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Falha ao atualizar");
+            }
+            
+
+
+        }
+
+        public async Task Delete(int? id)
+        {
+            if (id == null)
+                throw new Exception("ID necessário");
+
+            Expensive expensive = await FindById(id);
+            if (expensive == null)
+            {
+                throw new Exception("Inexistente");
+            }
+            try
+            {
+                _dbContext.Expensives.Remove(expensive);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Falha ao Deletar");
+            }
+
+
+
+        }
+
+
 
     }
 }
